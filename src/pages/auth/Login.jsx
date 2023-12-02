@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { EyeIcon, EyeSlashIcon } from '../../components/Icons'
 import FormControl from '../../components/FormControl'
-import { useToast } from '../../context/ToastContext'
+import vallesur from '../../assets/vallesur.png'
+import useToast from '../../hooks/useToast'
 
 const Login = () => {
 
@@ -19,10 +20,10 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        // Aquí se envia el formulario para el login y luego se redirige
+
         setIsSending(true)
         toast.promise(new Promise((resolve, rejected) => {
-            setTimeout(() => resolve({rol: 'gerente'}), 1000)
+            setTimeout(() => rejected({email: 'el email ya esta ocupado'}), 1000)
         }), {
             error: <p>No se pudo iniciar sesion</p>,
             loading: <p>Logeando</p>,
@@ -31,8 +32,7 @@ const Login = () => {
             console.log(res);
         }).catch((err) => {
             console.log(err);
-        })
-        .finally(() => {
+        }).finally(() => {
             setIsSending(false)
         })
         
@@ -48,7 +48,7 @@ const Login = () => {
                                 <div className="text-white text-center">
                                     <img
                                         className="mx-auto w-48"
-                                        src="https://tecdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                                        src={vallesur}
                                         alt="logo"
                                     />
                                     

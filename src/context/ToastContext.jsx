@@ -1,11 +1,7 @@
 import { createContext, useContext } from 'react';
 import toast, { Toaster } from 'react-hot-toast'
 
-const ToastContext = createContext();
-
-export const useToast = () => {
-    return useContext(ToastContext)
-}
+export const ToastContext = createContext();
 
 export const ToastProvider = ({ children }) => {
   return (

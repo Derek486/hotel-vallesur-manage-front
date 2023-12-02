@@ -1,8 +1,11 @@
 import { NavLink } from "react-router-dom"
 
-const LinkDashboard = ({ icon = null, text, to = null }) => {
+const LinkDashboard = ({ icon = null, text, to = null, onClick = () => {} }) => {
     return (
-        <NavLink to={to} className={({ isActive }) =>
+        <NavLink 
+            to={to} 
+            onClick={onClick}
+            className={({ isActive }) =>
                 `${to && isActive ? "bg-stroke text-black font-semibold" : "hover:bg-graydark"} p-4 rounded-xl flex gap-4`
             }
         >
