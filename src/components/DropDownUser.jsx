@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
 import { ProfileIcon, LogoutIcon } from './Icons';
 import useLogout from '../hooks/useLogout';
 
-const DropdownUser = () => {
+const DropdownUser = ({ role }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logout] = useLogout()
-  const [usuario, setUsuario] = useState({})
-  const navigate = useNavigate()
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -65,7 +62,6 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-lg font-medium text-black">
-            {/* { usuario.nombres } */}
             Juan Jose
           </span>
         </span>
@@ -97,7 +93,7 @@ const DropdownUser = () => {
         }`}
       >
         <Link
-            to="/dashboard/perfil"
+            to={`/dashboard/${role}/perfil`}
             className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
         >
             <ProfileIcon height={22} width={22} />

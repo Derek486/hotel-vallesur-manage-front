@@ -1,15 +1,15 @@
 import DashboardLayout from "./DashboardLayout"
-import SidebarGerente from "../components/SidebarGerente"
+import SidebarAgente from "../components/SidebarAgente"
 import { Outlet } from "react-router-dom"
 
-const GerenteLayout = () => {
+const AgenteLayout = () => {
     return (
         <>
-            <DashboardLayout role={'gerente'} sidebar={<SidebarGerente />} >
+            <DashboardLayout role={'agente'} sidebar={<SidebarAgente />} >
                 <Outlet />
             </DashboardLayout>
         </>
     )
 }
 
-export default GerenteLayout
+export default AgenteLayout

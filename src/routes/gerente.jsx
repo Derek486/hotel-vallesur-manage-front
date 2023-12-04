@@ -1,20 +1,54 @@
-import { createBrowserRouter, redirect } from "react-router-dom"
+import { redirect } from "react-router-dom"
 import Perfil from "../pages/dashboard/Perfil"
-import Administradores from "../pages/dashboard/gerentes/Administradores"
-import Habitaciones from "../pages/dashboard/gerentes/Habitaciones"
+import Agentes from "../pages/dashboard/gerentes/agentes/Agentes"
+import AgentesRegister from "../pages/dashboard/gerentes/agentes/AgentesRegister"
+import AgentesShow from "../pages/dashboard/gerentes/agentes/AgentesShow"
+import Departamentos from "../pages/dashboard/gerentes/departamentos/Departamentos"
+import DepartamentoShow from "../pages/dashboard/gerentes/departamentos/DepartamentoShow"
+import DepartamentosRegister from "../pages/dashboard/gerentes/departamentos/DepartamentosRegister"
 
 const routesGerente = [
+    {
+        path: '',
+        loader: () => redirect('perfil')
+    },
     {
         path: 'perfil',
         element: <Perfil />
     },
     {
-        path: 'habitaciones',
-        element: <Habitaciones />
+        path: 'departamentos',
+        children: [
+            {
+                path: '',
+                element: <Departamentos />
+            },
+            {
+                path: 'register',
+                element: <DepartamentosRegister />
+            },
+            {
+                path: ':id',
+                element: <DepartamentoShow />
+            }
+        ]
     },
     {
-        path: 'administradores',
-        element: <Administradores />
+        path: 'agentes',
+        children: [
+            {
+                path: '',
+                element: <Agentes />
+            },
+            {
+                path: 'register',
+                element: <AgentesRegister />
+            },
+            {
+                path: ':id',
+                element: <AgentesShow />
+            }
+        ]
     }
 ]
 

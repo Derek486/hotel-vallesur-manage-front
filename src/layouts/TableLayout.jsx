@@ -1,0 +1,22 @@
+const TableLayout = ({ header = [], children }) => {
+    return (
+        <>
+            <table className='w-full table-auto rounded-xl border-separate'>
+                <thead className='rounded-t-md bg-gray-2 dark:bg-meta-4'>
+                    <tr>
+                        {header.map((h) => 
+                            <th key={h} scope="col" className="px-4 py-3">
+                                {h}
+                            </th>
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                    {children}
+                </tbody>
+            </table>
+        </>
+    )
+}
+
+export default TableLayout

@@ -4,8 +4,8 @@ import LinkDashboard from "./LinkDashboard"
 const SidebarGerente = () => {
     return (
         <>
-            <LinkDashboard text={"Habitaciones"} to="habitaciones" icon={<DoorIcon />} />
-            <LinkDashboard text={"Recepcionistas"} to="administradores" icon={<PeopleIcon />} />
+            <LinkDashboard text={"Departamentos"} to="departamentos" icon={<DoorIcon />} />
+            <LinkDashboard text={"Agentes"} to="agentes" icon={<PeopleIcon />} />
         </>
     )
 }

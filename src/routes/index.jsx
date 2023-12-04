@@ -1,14 +1,12 @@
 import {
-    Outlet,
     createBrowserRouter,
     redirect,
-    useLocation,
 } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import routesGerente from "./gerente";
-import routesRecepcionista from "./recepcionista";
+import routesAgente from "./agente";
 import GerenteLayout from "../layouts/GerenteLayout";
-import RecepcionistaLayout from "../layouts/RecepcionistaLayout";
+import AgenteLayout from "../layouts/AgenteLayout";
 import NotFound from "../pages/NotFound";
 
 const router = createBrowserRouter([
@@ -40,9 +38,9 @@ const router = createBrowserRouter([
                 children: routesGerente
             },
             {
-                path: 'recepcionista',
-                element: <RecepcionistaLayout />,
-                children: routesRecepcionista
+                path: 'agente',
+                element: <AgenteLayout />,
+                children: routesAgente
             }
         ]
     },
