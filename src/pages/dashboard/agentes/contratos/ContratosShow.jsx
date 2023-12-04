@@ -1,9 +1,9 @@
-const ContratosRegister = () => {
+const ContratosShow = () => {
     return (
         <>
             Contrato register
         </>
-    )
+    )   
 }   
 
-export default ContratosRegister
+export default ContratosShow

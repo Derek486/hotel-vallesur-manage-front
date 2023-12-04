@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 const titleLocations = {
     'gerente/perfil': 'Bienvenido gerente',
@@ -9,6 +9,7 @@ const titleLocations = {
 
     'agente/perfil': 'Bienvenido agente',
     'agente/inquilinos': 'Inquilinos registrados',
+    'agente/inquilinos/register': 'Registro de inquilino',
     'agente/contratos': 'Contratos vigentes',
     'agente/pagos': 'Pagos realizados',
 
@@ -17,7 +18,6 @@ const titleLocations = {
 // Puedes establecer el título del header o sino se coloca por defecto
 const useHeader = () => {
     const location = useLocation()
-    const {id} = useParams()
     return [titleLocations[location.pathname.split('/dashboard/')[1]]]
 }
 

@@ -5,7 +5,7 @@ const TableLayout = ({ header = [], children }) => {
                 <thead className='rounded-t-md bg-gray-2 dark:bg-meta-4'>
                     <tr>
                         {header.map((h) => 
-                            <th key={h} scope="col" className="px-4 py-3">
+                            <th key={h} scope="col" className="px-4 py-3 text-white">
                                 {h}
                             </th>
                         )}

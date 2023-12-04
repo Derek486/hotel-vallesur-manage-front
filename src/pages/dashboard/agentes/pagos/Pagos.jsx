@@ -1,14 +1,23 @@
 import { useNavigate } from "react-router-dom"
 import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
-import { EditIcon, FileIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
+import { FileIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import TableLayout from "../../../../layouts/TableLayout"
 import { useEffect, useState } from "react"
+import SelectControl from "../../../../components/SelectControl"
+import useForm from "../../../../hooks/useForm"
 
 const Pagos = () => {
-    const navigate = useNavigate()
     const [departamentos, setDepartamentos] = useState([])
-
+    const [formPago, handleInputPago] = useForm({})
+    const inquilinos = Array.from({length: 20}, (v, k) => (
+        {
+            id: k,
+            nombres: 'mario',
+            apellidos: 'castañeda',
+            departamento: 201
+         }
+    ))
     useEffect(() => {
         // Se listan los departamentos
         setDepartamentos(Array.from({length: 20}, (v, k) => (
@@ -23,6 +32,10 @@ const Pagos = () => {
              }
         )))
     }, [])
+
+    const generarPago = () => {
+        console.log(formPago);
+    }
 
     return (
         <>
@@ -68,11 +81,53 @@ const Pagos = () => {
                     </div>
                 </div>
                 <div className="flex flex-col h-full bg-white gap-4 flex-1">
-                    <div className="py-4 h-16 font-semibold text-lg flex justify-center items-center  bg-gradient-to-r from-black via-boxdark to-black">
+                    <div className="p-4 h-12 font-semibold text-lg flex justify-center items-center  bg-gradient-to-r from-black via-boxdark to-black">
                         Registrar nuevo pago
                     </div>
-                    <div className="">
+                    <div className="px-8 flex flex-col gap-4">
+                        <FormControl 
+                            type="number"
+                            name={'montopago'}
+                            label={'Monto de pago'}
+                            value={formPago.montopago || ''}
+                            onInput={handleInputPago}
+                        />
+                        <SelectControl 
+                            name={'metodopago'}
+                            label={'Método de pago'}
+                            options={[
+                                {Efectivo: 'Efectivo'},
+                                {Transferencia: 'Transferencia'},
+                                {Tarjeta: 'Tarjeta'}
+                            ]}
+                            value={formPago.metodopago || ''}
+                            onInput={handleInputPago}
+                        />
 
+                    </div>
+                    <div className="p-4 h-12 font-semibold text-lg flex justify-center items-center  bg-gradient-to-r from-black via-boxdark to-black">
+                        Inquilino
+                    </div>
+                    <div className="flex flex-1 w-full flex-col px-8 overflow-auto gap-2">
+                        <p className="text-graydark py-2">Seleccione un inquilino</p>
+                        <div className="flex-1 overflow-auto">
+                            <ul className=" max-h-full overflow-auto">
+                                {inquilinos.map(i => (
+                                    <li key={i.id}>
+                                        <button className={`flex w-full text-graydark justify-between transition-colors p-4 ${formPago.inquilino === i.id ? 'bg-bodydark1' : 'hover:bg-whiten'}`} onClick={(e) => {handleInputPago(e, {name: 'inquilino', value: i.id})}}>
+                                            <p>{i.nombres}</p> 
+                                            <p>{i.apellidos}</p>
+                                            <p>Departamento: {i.departamento}</p>
+                                        </button>
+                                    </li> 
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="p-4 ms-auto">
+                        <ButtonPrimary onClick={generarPago}>
+                            Generar pago
+                        </ButtonPrimary>
                     </div>
                 </div>
             </div>

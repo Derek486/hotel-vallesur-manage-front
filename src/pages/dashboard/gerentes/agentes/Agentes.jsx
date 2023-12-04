@@ -42,7 +42,7 @@ const Agentes = () => {
                         Registrar nuevo
                     </ButtonPrimary>
                 </div>
-                <div className="flex flex-1 w-full overflow-auto gap-2 ">
+                <div className="flex flex-1 w-full overflow-auto gap-2">
                     <div className="w-full px-4 pb-2">
                         {/* Tabla de departamentos */}
                         <TableLayout header={[

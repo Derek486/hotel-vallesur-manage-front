@@ -39,7 +39,7 @@ const Inquilinos = () => {
                         />
                     </div>
                     <ButtonPrimary onClick={() => navigate('register')}>
-                        Registrar nuevo
+                        Registrar nuevo inquilino
                     </ButtonPrimary>
                 </div>
                 <div className="flex flex-1 w-full overflow-auto gap-2 ">

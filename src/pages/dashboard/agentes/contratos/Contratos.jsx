@@ -39,9 +39,6 @@ const Contratos = () => {
                             placeholder={'Buscar contrato'}
                         />
                     </div>
-                    <ButtonPrimary onClick={() => navigate('register')}>
-                        Registar nuevo contrato
-                    </ButtonPrimary>
                 </div>
                 <div className="flex flex-1 w-full overflow-auto gap-2 ">
                     <div className="w-full px-4 pb-2">
@@ -53,7 +50,6 @@ const Contratos = () => {
                             "Renta mensual",
                             "Estado",
                             "Inquilino",
-                            "Acción"
                         ]}>
                             {agentes?.map(agente => (
                                 <tr key={agente.id} className="text-black text-center">
@@ -63,10 +59,6 @@ const Contratos = () => {
                                     <td className="p-4">{agente.username}</td>
                                     <td className="p-4">{agente.telefono}</td>
                                     <td className="p-4">{agente.numeroIdentificacion}</td>
-                                    <td className="p-4 flex justify-center gap-2">
-                                        <EditIcon onClick={() => navigate(`${agente.id}`)} className='cursor-pointer hover:fill-bodydark2 transition-colors' />
-                                        <TrashIcon className='cursor-pointer hover:fill-danger transition-colors' />
-                                    </td>
                                 </tr>
                             ))}
                         </TableLayout>

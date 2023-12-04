@@ -75,34 +75,34 @@ const AgentesRegister = () => {
                     <div className="flex flex-col w-full">
                         <header className="text-xl font-semibold mb-10">Datos de agente</header>
                         <div className="flex flex-col gap-4">
-                                <FormControl 
-                                    name={'nombres'}
-                                    type={'text'}
-                                    value={form.nombres || ''}
-                                    label={'Nombres de agente'}
-                                    onInput={handleInput}
-                                />
-                                <FormControl 
-                                    name={'apellidos'}
-                                    type={'text'}
-                                    value={form.apellidos || ''}
-                                    label={'Apellidos de agente'}
-                                    onInput={handleInput}
-                                />
-                                <FormControl 
-                                    name={'telefono'}
-                                    type={'tel'}
-                                    value={form.telefono || ''}
-                                    label={'Nro de telefono'}
-                                    onInput={handleInput}
-                                />
-                                <FormControl 
-                                    name={'numeroIdentificacion'}
-                                    type={'number'}
-                                    value={form.numeroIdentificacion || ''}
-                                    label={'Número de identificación'}
-                                    onInput={handleInput}
-                                />
+                            <FormControl 
+                                name={'nombres'}
+                                type={'text'}
+                                value={form.nombres || ''}
+                                label={'Nombres de agente'}
+                                onInput={handleInput}
+                            />
+                            <FormControl 
+                                name={'apellidos'}
+                                type={'text'}
+                                value={form.apellidos || ''}
+                                label={'Apellidos de agente'}
+                                onInput={handleInput}
+                            />
+                            <FormControl 
+                                name={'telefono'}
+                                type={'tel'}
+                                value={form.telefono || ''}
+                                label={'Nro de telefono'}
+                                onInput={handleInput}
+                            />
+                            <FormControl 
+                                name={'numeroIdentificacion'}
+                                type={'number'}
+                                value={form.numeroIdentificacion || ''}
+                                label={'Número de identificación'}
+                                onInput={handleInput}
+                            />
                         </div>
                     </div>
                     <div className="flex gap-2 w-full flex-1 items-end justify-end">
