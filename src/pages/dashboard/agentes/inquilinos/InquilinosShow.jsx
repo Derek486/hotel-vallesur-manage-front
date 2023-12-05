@@ -123,7 +123,7 @@ const InquilinosShow = () => {
                             <FormControl 
                                 type={'date'}
                                 name={'fechainiciocontrato'}
-                                label={'Fecha de inicio de contrato'}
+                                label={'Fecha de inicio'}
                                 value={formContrato.fechainiciocontrato || ''}
                                 onInput={handleInputContrato}
                                 readonly={!editContrato}
@@ -131,7 +131,7 @@ const InquilinosShow = () => {
                             <FormControl 
                                 type={'date'}
                                 name={'fechafincontrato'}
-                                label={'Fecha de fin de contrato'}
+                                label={'Fecha de fin'}
                                 value={formContrato.fechafincontrato || ''}
                                 onInput={handleInputContrato}
                                 readonly={!editContrato}

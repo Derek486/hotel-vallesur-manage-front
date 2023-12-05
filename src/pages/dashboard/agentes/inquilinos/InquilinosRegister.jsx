@@ -33,7 +33,7 @@ const InquilinosRegister = () => {
 
     return (
         <>
-            <div className="flex gap-4 h-full">
+            <div className="flex gap-4 h-full overflow-hidden">
                 <div className="bg-white p-8 rounded basis-1/2 text-black flex flex-col gap-8 overflow-auto">
                     <div className="flex flex-col gap-10">
                         <header className="text-xl font-semibold">Datos de inquilino</header>
