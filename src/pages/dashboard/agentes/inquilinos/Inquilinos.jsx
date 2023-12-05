@@ -4,14 +4,16 @@ import FormControl from "../../../../components/FormControl"
 import { EditIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import TableLayout from "../../../../layouts/TableLayout"
 import { useEffect, useState } from "react"
+import useSearch from "../../../../hooks/useSearch"
 
 const Inquilinos = () => {
     const navigate = useNavigate()
-    const [departamentos, setDepartamentos] = useState([])
+    const [inquilinos, setInquilinos] = useState([])
+    const [filteredData, handleSearch] = useSearch(inquilinos)
 
     useEffect(() => {
         // Se listan los departamentos
-        setDepartamentos(Array.from({length: 20}, (v, k) => (
+        setInquilinos(Array.from({length: 20}, (v, k) => (
             {
                 id: k,
                 nDepartamento: '23',
@@ -34,8 +36,8 @@ const Inquilinos = () => {
                         </div>
                         <FormControl   
                             type='search'
-                            name={'dBusqueda'}
-                            placeholder={'Buscar departamento'}
+                            placeholder={'Buscar inquilino'}
+                            onInput={handleSearch}
                         />
                     </div>
                     <ButtonPrimary onClick={() => navigate('register')}>
@@ -54,7 +56,7 @@ const Inquilinos = () => {
                             "Departamento",
                             "Acción"
                         ]}>
-                            {departamentos?.map(departamento => (
+                            {filteredData?.map(departamento => (
                                 <tr key={departamento.id} className="text-black text-center">
                                     <td className="p-4">{departamento.nDepartamento}</td>
                                     <td className="p-4">{departamento.nCuartos}</td>

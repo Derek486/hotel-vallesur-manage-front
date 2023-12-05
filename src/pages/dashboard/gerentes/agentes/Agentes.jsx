@@ -4,10 +4,12 @@ import { EditIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
 import TableLayout from "../../../../layouts/TableLayout"
+import useSearch from "../../../../hooks/useSearch"
 
 const Agentes = () => {
     const navigate = useNavigate()
     const [agentes, setAgentes] = useState([])
+    const [filteredData, handleSearch] = useSearch(agentes)
 
     useEffect(() => {
         // Se listan los agentes
@@ -34,8 +36,8 @@ const Agentes = () => {
                         </div>
                         <FormControl   
                             type='search'
-                            name={'dBusqueda'}
                             placeholder={'Buscar agente'}
+                            onInput={handleSearch}
                         />
                     </div>
                     <ButtonPrimary onClick={() => navigate('register')}>
@@ -54,7 +56,7 @@ const Agentes = () => {
                             "Nro de identificación",
                             "Acción"
                         ]}>
-                            {agentes?.map(agente => (
+                            {filteredData?.map(agente => (
                                 <tr key={agente.id} className="text-black text-center">
                                     <td className="p-4">{agente.nombres}</td>
                                     <td className="p-4">{agente.apellidos}</td>

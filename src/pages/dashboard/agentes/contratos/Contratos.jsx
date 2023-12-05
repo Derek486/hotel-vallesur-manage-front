@@ -4,15 +4,18 @@ import TableLayout from "../../../../layouts/TableLayout"
 import { useEffect, useState } from "react"
 import FormControl from "../../../../components/FormControl"
 import ButtonPrimary from "../../../../components/ButtonPrimary"
+import useSearch from "../../../../hooks/useSearch"
 
 const Contratos = () => {
 
     const navigate = useNavigate()
-    const [agentes, setAgentes] = useState([])
+    const [contratos, setContratos] = useState([])
+    const [filteredData, handleSearch] = useSearch(contratos)
+
 
     useEffect(() => {
         // Se listan los agentes
-        setAgentes(Array.from({length: 20}, (v, k) => (
+        setContratos(Array.from({length: 20}, (v, k) => (
             {
                 id: k,
                 nombres: 'Mario',
@@ -35,8 +38,8 @@ const Contratos = () => {
                         </div>
                         <FormControl   
                             type='search'
-                            name={'dBusqueda'}
                             placeholder={'Buscar contrato'}
+                            onInput={handleSearch}
                         />
                     </div>
                 </div>
@@ -51,7 +54,7 @@ const Contratos = () => {
                             "Estado",
                             "Inquilino",
                         ]}>
-                            {agentes?.map(agente => (
+                            {filteredData?.map(agente => (
                                 <tr key={agente.id} className="text-black text-center">
                                     <td className="p-4">{agente.nombres}</td>
                                     <td className="p-4">{agente.apellidos}</td>

@@ -4,24 +4,27 @@ import TableLayout from "../../../../layouts/TableLayout"
 import { EditIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import ButtonPrimary from '../../../../components/ButtonPrimary'
 import FormControl from '../../../../components/FormControl'
+import useSearch from '../../../../hooks/useSearch'
 
 const Departamentos = () => {
     const navigate = useNavigate()
     const [departamentos, setDepartamentos] = useState([])
+    const [filteredData, handleSearch] = useSearch(departamentos)
 
     useEffect(() => {
         // Se listan los departamentos
-        setDepartamentos(Array.from({length: 20}, (v, k) => (
+        let data = Array.from({length: 20}, (v, k) => (
             {
                 id: k,
                 nDepartamento: '23',
                 nCuartos: '23',
-                nBaños: '23',
-                area: '23',
-                precio: '23',
-                estado: 'Ocupado',
+                nBaños: 22*k,
+                area: '23'+k,
+                precio: '231'+k,
+                estado: k % 2 === 0 ? 'Ocupado' : 'Desocupado',
              }
-        )))
+        ))
+        setDepartamentos(data)
     }, [])
 
     return (
@@ -34,8 +37,8 @@ const Departamentos = () => {
                         </div>
                         <FormControl   
                             type='search'
-                            name={'dBusqueda'}
                             placeholder={'Buscar departamento'}
+                            onInput={handleSearch}
                         />
                     </div>
                     <ButtonPrimary onClick={() => navigate('register')}>
@@ -54,7 +57,7 @@ const Departamentos = () => {
                             "Estado",
                             "Acción"
                         ]}>
-                            {departamentos?.map(departamento => (
+                            {filteredData?.map(departamento => (
                                 <tr key={departamento.id} className="text-black text-center">
                                     <td className="p-4">{departamento.nDepartamento}</td>
                                     <td className="p-4">{departamento.nCuartos}</td>

@@ -6,10 +6,14 @@ import TableLayout from "../../../../layouts/TableLayout"
 import { useEffect, useState } from "react"
 import SelectControl from "../../../../components/SelectControl"
 import useForm from "../../../../hooks/useForm"
+import useSearch from "../../../../hooks/useSearch"
 
 const Pagos = () => {
-    const [departamentos, setDepartamentos] = useState([])
+    const [pagos, setPagos] = useState([])
     const [formPago, handleInputPago] = useForm({})
+    const [filteredData, handleSearch] = useSearch(pagos)
+
+
     const inquilinos = Array.from({length: 20}, (v, k) => (
         {
             id: k,
@@ -20,7 +24,7 @@ const Pagos = () => {
     ))
     useEffect(() => {
         // Se listan los departamentos
-        setDepartamentos(Array.from({length: 20}, (v, k) => (
+        setPagos(Array.from({length: 20}, (v, k) => (
             {
                 id: k,
                 nDepartamento: '23',
@@ -50,6 +54,7 @@ const Pagos = () => {
                                 type='search'
                                 name={'dBusqueda'}
                                 placeholder={'Buscar pago'}
+                                onInput={handleSearch}
                             />
                         </div>
                         <ButtonPrimary>
@@ -65,13 +70,12 @@ const Pagos = () => {
                                 "Monto",
                                 "Acción"
                             ]}>
-                                {departamentos?.map(departamento => (
+                                {filteredData?.map(departamento => (
                                     <tr key={departamento.id} className="text-black text-center">
                                         <td className="p-4">{departamento.nDepartamento}</td>
                                         <td className="p-4">{departamento.nCuartos}</td>
                                         <td className="p-4">{departamento.nBaños}</td>
                                         <td className="p-4 flex justify-center gap-2">
-                                            <FileIcon onClick={() => {console.log("reporte");}} className='cursor-pointer hover:fill-bodydark2 transition-colors' />
                                             <TrashIcon className='cursor-pointer hover:fill-danger transition-colors' />
                                         </td>
                                     </tr>
