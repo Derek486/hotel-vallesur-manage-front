@@ -35,7 +35,7 @@ const Login = () => {
 
     return (
         <>
-            <main className="h-screen bg-bodydark3 dark:bg-neutral-700">
+            <main className="h-screen bg-background-hotel bg-cover bg-no-repeat dark:bg-neutral-700">
                 <div className="g-6 flex h-full justify-center items-center">
                     <div className="rounded-lg w-auto">
                         <div className="g-0 flex flex-col lg:flex-row justify-center items-center">
@@ -55,7 +55,7 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <div className="p-12 min-w-[450px] shadow-card-3">
+                            <div className="p-12 min-w-[450px] bg-stroke rounded-md shadow-card-3">
                                 <div className="text-center">
                                     <h1 className="mb-6 text-2xl font-semibold">
                                         Inicio de sesion
