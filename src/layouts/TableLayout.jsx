@@ -1,7 +1,7 @@
-const TableLayout = ({ header = [], children }) => {
+const TableLayout = ({ id, header = [], children, refTable }) => {
     return (
         <>
-            <table className='w-full table-auto rounded-xl border-separate'>
+            <table id={id} ref={refTable} className='w-full table-auto rounded-xl border-separate'>
                 <thead className='rounded-t-md bg-gray-2 dark:bg-meta-4'>
                     <tr>
                         {header.map((h) => 

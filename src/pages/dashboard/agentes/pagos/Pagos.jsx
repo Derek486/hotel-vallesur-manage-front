@@ -3,16 +3,19 @@ import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
 import { FileIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import TableLayout from "../../../../layouts/TableLayout"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import SelectControl from "../../../../components/SelectControl"
 import useForm from "../../../../hooks/useForm"
 import useSearch from "../../../../hooks/useSearch"
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+
 
 const Pagos = () => {
     const [pagos, setPagos] = useState([])
     const [formPago, handleInputPago] = useForm({})
     const [filteredData, handleSearch] = useSearch(pagos)
-
+    const tableRef = useRef(null)
 
     const inquilinos = Array.from({length: 20}, (v, k) => (
         {
@@ -22,17 +25,15 @@ const Pagos = () => {
             departamento: 201
          }
     ))
+
     useEffect(() => {
         // Se listan los departamentos
         setPagos(Array.from({length: 20}, (v, k) => (
             {
                 id: k,
-                nDepartamento: '23',
-                nCuartos: '23',
-                nBaños: '23',
-                area: '23',
-                precio: '23',
-                estado: 'Ocupado',
+                inquilino: 'Juanito perez',
+                fechaPago: '2023-12-05',
+                monto: '1200',
              }
         )))
     }, [])
@@ -40,6 +41,28 @@ const Pagos = () => {
     const generarPago = () => {
         console.log(formPago);
     }
+
+    const generarReporte  = useCallback((id) => {
+        const doc = new jsPDF()
+        autoTable(doc, {
+            startY: 45,
+            head: [['ID', 'Inquilino', 'Fecha de pago', 'Monto']],
+            body: (id ? pagos.filter(p => p.id === id) : pagos).map(p => [p.id, p.inquilino, p.fechaPago, p.monto]),
+            headStyles: {
+                fillColor: '#313D4A'
+            },
+            theme: 'striped',
+        })
+        doc.text(`Fecha: ${new Date().toISOString()}`, 15, 40)
+        if (id) {
+            doc.text(`Factura ${id}`, 90, 20)
+            doc.save(`reporte_pagos_${id}.pdf`)
+        } else if (tableRef) {
+            doc.text('Facturas', 90, 20)
+            doc.save('reporte_pagos.pdf')
+        }
+    })
+
 
     return (
         <>
@@ -57,25 +80,26 @@ const Pagos = () => {
                                 onInput={handleSearch}
                             />
                         </div>
-                        <ButtonPrimary>
+                        <ButtonPrimary onClick={() => generarReporte()}>
                             Generar reporte
                         </ButtonPrimary>
                     </div>
                     <div className="flex flex-1 w-full overflow-auto gap-2 ">
                         <div className="w-full px-4 pb-2">
                             {/* Tabla de departamentos */}
-                            <TableLayout header={[
+                            <TableLayout id="table" refTable={tableRef} header={[
                                 "Inquilino",
                                 "Fecha de pago",
                                 "Monto",
                                 "Acción"
                             ]}>
-                                {filteredData?.map(departamento => (
-                                    <tr key={departamento.id} className="text-black text-center">
-                                        <td className="p-4">{departamento.nDepartamento}</td>
-                                        <td className="p-4">{departamento.nCuartos}</td>
-                                        <td className="p-4">{departamento.nBaños}</td>
+                                {filteredData?.map(pago => (
+                                    <tr key={pago.id} className="text-black text-center">
+                                        <td className="p-4">{pago.inquilino}</td>
+                                        <td className="p-4">{pago.fechaPago}</td>
+                                        <td className="p-4">{pago.monto}</td>
                                         <td className="p-4 flex justify-center gap-2">
+                                            <FileIcon onClick={() => generarReporte(pago.id)} className='cursor-pointer hover:fill-bodydark2 transition-colors' />
                                             <TrashIcon className='cursor-pointer hover:fill-danger transition-colors' />
                                         </td>
                                     </tr>
