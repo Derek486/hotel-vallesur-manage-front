@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import TableLayout from "../../../../layouts/TableLayout"
 import { EditIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import ButtonPrimary from '../../../../components/ButtonPrimary'
+import { listarDepartamentos } from '../../../../services/departamentos'
 import FormControl from '../../../../components/FormControl'
 import useSearch from '../../../../hooks/useSearch'
 
@@ -13,18 +14,13 @@ const Departamentos = () => {
 
     useEffect(() => {
         // Se listan los departamentos
-        let data = Array.from({length: 20}, (v, k) => (
-            {
-                id: k,
-                nDepartamento: '23',
-                nCuartos: '23',
-                nBaños: 22*k,
-                area: '23'+k,
-                precio: '231'+k,
-                estado: k % 2 === 0 ? 'Ocupado' : 'Desocupado',
-             }
-        ))
-        setDepartamentos(data)
+        listarDepartamentos()
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }, [])
 
     return (

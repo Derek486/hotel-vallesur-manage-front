@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import { jwtDecode } from 'jwt-decode'
+import { useNavigate } from 'react-router-dom'
 import { EyeIcon, EyeSlashIcon } from '../../components/Icons'
 import FormControl from '../../components/FormControl'
 import vallesur from '../../assets/vallesur.png'
 import useToast from '../../hooks/useToast'
 import ButtonPrimary from '../../components/ButtonPrimary'
 import useForm from '../../hooks/useForm'
+import { login } from '../../services/auth'
 
 const Login = () => {
-
+    const navigate = useNavigate()
     const [form, handleInput] = useForm({})
     const [passwordHidden, setPasswordHidden] = useState(false)
     const [isSending, setIsSending] = useState(false)
@@ -17,14 +20,14 @@ const Login = () => {
         e.preventDefault()
 
         setIsSending(true)
-        toast.promise(new Promise((resolve, rejected) => {
-            setTimeout(() => rejected({email: 'el email ya esta ocupado'}), 1000)
-        }), {
+        toast.promise(login(form), {
             error: <p>No se pudo iniciar sesion</p>,
             loading: <p>Logeando</p>,
             success: <p>Inicio de sesion correcto</p>
         }).then((res) => {
-            console.log(res);
+            localStorage.setItem('token', res.data.token);
+            const decode = jwtDecode(res.data.token)
+            console.log(decode);
         }).catch((err) => {
             console.log(err);
         }).finally(() => {
@@ -67,16 +70,16 @@ const Login = () => {
                                         id={'correo'}
                                         type='email'
                                         label={'Correo electrónico'}
-                                        name={'correo'}
-                                        value={form.correo || ''}
+                                        name={'email'}
+                                        value={form.email || ''}
                                         onInput={handleInput}
                                     />
                                     <FormControl
                                         id={'contrasena'}
                                         type={!passwordHidden ? 'password' : 'text'}
                                         label={'Contraseña'}
-                                        name={'contrasena'}
-                                        value={form.contrasena || ''}
+                                        name={'password'}
+                                        value={form.password || ''}
                                         className='mb-4'
                                         onInput={handleInput}
                                         onInputIcon={() => setPasswordHidden(!passwordHidden)}
