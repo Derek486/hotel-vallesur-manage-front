@@ -12,21 +12,32 @@ import NotFound from "../pages/NotFound";
 const router = createBrowserRouter([
     {
         path: '',
-        loader: () => {
-            // Aquí redirige a su home o al login (si esta o no autenticado)
-            return redirect('/login')
-        }
+        loader: () => localStorage.getItem('token') ? redirect('/dashboard') : redirect('/login')
     },
     {
         path: "/login",
         element: <Login />,
+        loader: () => {
+            let rol = window.localStorage.getItem('rol')
+            let decode = window.localStorage.getItem('token')
+            if(rol && decode)
+                return redirect('/dashboard');
+            return null
+        }
     },
     {
         path: '/dashboard',
         index: true,
         loader: () => {
-            // Aquí se redirige a su home (dependiendo de su rol)
-            return redirect('/dashboard/gerente')
+            let rol = window.localStorage.getItem('rol')
+            let decode = window.localStorage.getItem('token')
+
+            if(decode && rol === 'ROLE_ADMIN'){
+                return redirect('/dashboard/gerente'); 
+            }else if (decode && rol === 'ROLE_MANAGER') {
+                return redirect('/dashboard/agente');
+            }
+            return redirect('/login')
         },
     },
     {
@@ -35,11 +46,29 @@ const router = createBrowserRouter([
             {
                 path: 'gerente',
                 element: <GerenteLayout />,
+                loader: () => {
+                    let rol = window.localStorage.getItem('rol')
+                    let decode = window.localStorage.getItem('token')
+                    if(rol && decode && rol !== 'ROLE_ADMIN')
+                        return redirect('/dashboard/agente');
+                    if(!rol || !decode)
+                        return redirect('/login')
+                    return null
+                },
                 children: routesGerente
             },
             {
                 path: 'agente',
                 element: <AgenteLayout />,
+                loader: () => {
+                    let rol = window.localStorage.getItem('rol')
+                    let decode = window.localStorage.getItem('token')
+                    if(rol && decode && rol !== 'ROLE_MANAGER')
+                        return redirect('/dashboard/gerente');
+                    if(!rol || !decode)
+                        return redirect('/login')
+                    return null
+                },
                 children: routesAgente
             }
         ]

@@ -4,7 +4,6 @@ import Pagos from "../pages/dashboard/agentes/pagos/Pagos"
 import Inquilinos from "../pages/dashboard/agentes/inquilinos/Inquilinos"
 import { redirect } from "react-router-dom"
 import InquilinosRegister from "../pages/dashboard/agentes/inquilinos/InquilinosRegister"
-import ContratosShow from "../pages/dashboard/agentes/contratos/ContratosShow"
 import InquilinosShow from "../pages/dashboard/agentes/inquilinos/InquilinosShow"
 
 const routesAgente = [
@@ -22,10 +21,6 @@ const routesAgente = [
             {
                 path: '',
                 element: <Contratos />
-            },
-            {
-                path: ':id',
-                element: <ContratosShow />
             }
         ]
     },

@@ -5,6 +5,8 @@ import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
 import TableLayout from "../../../../layouts/TableLayout"
 import useSearch from "../../../../hooks/useSearch"
+import { listarAgentes } from '../../../../services/agentes'
+import toast from "react-hot-toast"
 
 const Agentes = () => {
     const navigate = useNavigate()
@@ -12,19 +14,17 @@ const Agentes = () => {
     const [filteredData, handleSearch] = useSearch(agentes)
 
     useEffect(() => {
-        // Se listan los agentes
-        setAgentes(Array.from({length: 20}, (v, k) => (
-            {
-                id: k,
-                nombres: 'Mario',
-                apellidos: 'Ezcurra Zegarra',
-                email: 'admin@gmail.com',
-                username: 'mario123',
-                telefono: '967805223',
-                numeroIdentificacion: '612567146',
-             }
-        )))
-    }, [])
+        toast.promise(listarAgentes(),{
+            error: <p>Error al listar departamentos</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Departamentos listados correctamente</p> 
+        }).then((res) => {
+            setAgentes(res.data.data)
+        }).catch((err) => {
+            console.error(err);
+        })
+        
+    }, []);
 
     return (
         <>
@@ -51,19 +51,19 @@ const Agentes = () => {
                             "Nombres",
                             "Apellidos",
                             "Email",
-                            "Username",
-                            "Telefono",
-                            "Nro de identificación",
+                            "Role",
+                            // "Telefono",
+                            // "Nro de identificación",
                             "Acción"
                         ]}>
                             {filteredData?.map(agente => (
                                 <tr key={agente.id} className="text-black text-center">
-                                    <td className="p-4">{agente.nombres}</td>
-                                    <td className="p-4">{agente.apellidos}</td>
+                                    <td className="p-4">{agente.firstname}</td>
+                                    <td className="p-4">{agente.lastname}</td>
                                     <td className="p-4">{agente.email}</td>
-                                    <td className="p-4">{agente.username}</td>
-                                    <td className="p-4">{agente.telefono}</td>
-                                    <td className="p-4">{agente.numeroIdentificacion}</td>
+                                    <td className="p-4">{agente.role}</td>
+                                    {/* <td className="p-4">{agente.telefono}</td>
+                                    <td className="p-4">{agente.numeroIdentificacion}</td> */}
                                     <td className="p-4 flex justify-center gap-2">
                                         <EditIcon onClick={() => navigate(`${agente.id}`)} className='cursor-pointer hover:fill-bodydark2 transition-colors' />
                                         <TrashIcon className='cursor-pointer hover:fill-danger transition-colors' />

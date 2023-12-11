@@ -1,18 +1,41 @@
-import { useNavigate } from "react-router-dom"
+import { Form, useNavigate } from "react-router-dom"
 import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
 import { EyeIcon, EyeSlashIcon, ProfileIcon } from "../../../../components/Icons"
 import { useState } from "react"
 import useForm from "../../../../hooks/useForm"
+import { register } from "../../../../services/agentes";
+import useToast from "../../../../hooks/useToast"
 
 const AgentesRegister = () => {
     const navigate = useNavigate()
-    const [form, handleInput] = useForm({})
+    const [form, handleInput, setForm] = useForm({})
     const [passwordHidden, setPasswordHidden] = useState(true)
+    const [errors, setErrors] = useState({})
+    const [toast] = useToast()
 
     const registrarAgente = () => {
-        // Aquí se envia el formulario de datos a spring para el registro
-    }
+        setErrors({})
+        setForm(prev => ({...prev, username: form?.email, role: 'MANAGER'}))
+        if (form?.password !== form?.passwordConfirm) {
+            setErrors({...errors, password: 'Las contraseñas no coinciden'})
+            return;
+        }
+
+        toast.promise(
+            register(form),
+            {
+                error: <p>No se pudo registrar al agente</p>,
+                loading: <p>Registrando...</p>,
+                success: <p>Se registró al agente correctamente</p>
+            }
+        ).then((res) => {
+            navigate('..')
+        }).catch((err) => {
+            console.log(err);
+            setErrors(err.response.data.data.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{}))
+        })
+    };
 
     return (
         <>
@@ -26,11 +49,6 @@ const AgentesRegister = () => {
                             {form.nombres} <br /> 
                             {form.apellidos}
                         </center>
-                        <center className="font-normal text-xl text-strokedark mt-20">
-                            <h2 className="mb-2">Contacto:</h2>
-                            {form.email} <br />
-                            {form.telefono}
-                        </center>
                     </div>
                 </div>
                 <div className="bg-white p-8 rounded text-black flex flex-col">
@@ -42,13 +60,7 @@ const AgentesRegister = () => {
                             label={'Correo electrónico'}
                             value={form.email || ''}
                             onInput={handleInput}
-                        />
-                        <FormControl 
-                            type={'text'}
-                            name={'username'}
-                            label={'Nombre de usuario'}
-                            value={form.username || ''}
-                            onInput={handleInput}
+                            error={errors?.email}
                         />
                         <FormControl 
                             type={!passwordHidden ? 'password' : 'text'}
@@ -58,6 +70,7 @@ const AgentesRegister = () => {
                             onInput={handleInput}
                             className='mb-4'
                             onInputIcon={() => setPasswordHidden(!passwordHidden)}
+                            error={errors?.password}
                             icon={!passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
                         />
                         <FormControl 
@@ -67,6 +80,7 @@ const AgentesRegister = () => {
                             value={form.passwordConfirm || ''}
                             onInput={handleInput}
                             onInputIcon={() => setPasswordHidden(!passwordHidden)}
+                            error={errors?.passwordConfirm}
                             icon={!passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
                         />
                     </div>
@@ -76,32 +90,20 @@ const AgentesRegister = () => {
                         <header className="text-xl font-semibold mb-10">Datos de agente</header>
                         <div className="flex flex-col gap-4">
                             <FormControl 
-                                name={'nombres'}
+                                name={'firstname'}
                                 type={'text'}
-                                value={form.nombres || ''}
+                                value={form.firstname || ''}
                                 label={'Nombres de agente'}
                                 onInput={handleInput}
+                                error={errors?.firstname}
                             />
                             <FormControl 
-                                name={'apellidos'}
+                                name={'lastname'}
                                 type={'text'}
-                                value={form.apellidos || ''}
+                                value={form.lastname || ''}
                                 label={'Apellidos de agente'}
                                 onInput={handleInput}
-                            />
-                            <FormControl 
-                                name={'telefono'}
-                                type={'tel'}
-                                value={form.telefono || ''}
-                                label={'Nro de telefono'}
-                                onInput={handleInput}
-                            />
-                            <FormControl 
-                                name={'numeroIdentificacion'}
-                                type={'number'}
-                                value={form.numeroIdentificacion || ''}
-                                label={'Número de identificación'}
-                                onInput={handleInput}
+                                error={errors?.lastname}
                             />
                         </div>
                     </div>

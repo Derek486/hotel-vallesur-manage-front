@@ -5,30 +5,60 @@ import useForm from "../../../../hooks/useForm"
 import { useEffect, useState } from "react"
 import TableLayout from "../../../../layouts/TableLayout"
 import SelectControl from "../../../../components/SelectControl"
+import { listarDepartamentos } from "../../../../services/departamentos"
+import { crearInquilino } from "../../../../services/inquilinos"
+import useToast from "../../../../hooks/useToast"
+import { guardarContrato } from "../../../../services/contratos"
 
 const InquilinosRegister = () => {
     const navigate = useNavigate()
-    const [form, handleInput] = useForm({})
-
+    const [toast] = useToast()
+    const [form, handleInput, setForm] = useForm({
+        estadocontrato: 'Activo'
+    })
     const [departamentos, setDepartamentos] = useState([])
+    const [errors, setErrors] = useState({})
+    const [inquilinoGuardado, setInquilinoGuardado] = useState(false)
 
     useEffect(() => {
-        // Se listan los departamentos
-        setDepartamentos(Array.from({length: 20}, (v, k) => (
-            {
-                id: k,
-                nDepartamento: '23',
-                nCuartos: '23',
-                nBaños: '23',
-                area: '23',
-                precio: '23',
-                estado: 'Ocupado',
-             }
-        )))
+        listarDepartamentos()
+            .then(res => {
+                setDepartamentos(res.data.data?.filter(d => d.estado === 'Disponible'))
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }, [])
 
-    const registrarAgente = () => {
-        // Aquí se envia el formulario de datos a spring para el registro
+    const registrarContrato = (data) => {
+        toast.promise(guardarContrato(data || form), {
+            error: <p>Error al generar contrato</p>,
+            loading: <p>Generando contrato...</p>,
+            success: <p>Contrato generado exitosamente</p>
+        }).then((res) => {
+            navigate('..')
+        }).catch((err) => {
+            setErrors(prev => ({...prev, ...err.response.data.data.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{})}))
+        })
+    }
+
+    const registrarInquilino = () => {
+        setErrors({})
+        if (!inquilinoGuardado) {
+            toast.promise(crearInquilino(form), {
+                error: <p>Error al crear inquilino</p>,
+                loading: <p>Creando...</p>,
+                success: <p>Datos de inquilino correctos</p>
+            }).then((res) => {
+                setInquilinoGuardado(true)
+                setForm(prev => ({...prev, inquilinos: {id: res.data.data.id}}))
+                registrarContrato({...form, inquilinos: {id: res.data.data.id}})
+            }).catch((err) => {
+                setErrors(prev => ({...prev, ...err.response.data.data.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{})}))
+            })
+        } else {
+            registrarContrato()
+        }
     }
 
     return (
@@ -45,22 +75,30 @@ const InquilinosRegister = () => {
                                     label={'Nombres de inquilino'}
                                     value={form.nombre || ''}
                                     onInput={handleInput}
+                                    error={errors.nombre}
                                 />
                                 <FormControl 
                                     type={'text'}
                                     name={'apellidos'}
                                     label={'Apellidos de inquilino'}
-                                    value={form.apellido || ''}
+                                    value={form.apellidos || ''}
                                     onInput={handleInput}
+                                    error={errors.apellidos}
                                 />
                             </section>
                             <section className="grid grid-cols-2 gap-4">
-                                <FormControl 
+                                <SelectControl 
                                     type={'number'}
-                                    name={'documento_de_identificacion'}
-                                    label={'Documento de identidad'}
-                                    value={form.documento_de_identificacion || ''}
+                                    name={'docIden'}
+                                    label={'Tipo de documento'}
+                                    value={form.docIden || ''}
                                     onInput={handleInput}
+                                    options={[
+                                        {Seleccionar: '---'},
+                                        {Dni: 'Dni'},
+                                        {Pasaporte: 'Pasaporte'}
+                                    ]}
+                                    error={errors.docIden}
                                 />
                                 <FormControl 
                                     type={'number'}
@@ -68,6 +106,7 @@ const InquilinosRegister = () => {
                                     label={'Edad de inquilino'}
                                     value={form.edad || ''}
                                     onInput={handleInput}
+                                    error={errors.edad}
                                 />
                             </section>
                             <section className="grid grid-cols-2 gap-4">
@@ -77,6 +116,7 @@ const InquilinosRegister = () => {
                                     label={'Telefono de inquilino'}
                                     value={form.telefono || ''}
                                     onInput={handleInput}
+                                    error={errors.telefono}
                                 />
                                 <FormControl 
                                     type={'email'}
@@ -84,6 +124,7 @@ const InquilinosRegister = () => {
                                     label={'Correo de inquilino'}
                                     value={form.correoelectronico || ''}
                                     onInput={handleInput}
+                                    error={errors.correoelectronico}
                                 />
                             </section>
                         </div>
@@ -94,10 +135,12 @@ const InquilinosRegister = () => {
                             <section className="grid grid-cols-2 gap-4">
                                 <FormControl 
                                     type={'date'}
+                                    min={new Date().toLocaleDateString('en-GB').split('/').reverse().join('-')}
                                     name={'fechainiciocontrato'}
                                     label={'Fecha de inicio de contrato'}
                                     value={form.fechainiciocontrato || ''}
                                     onInput={handleInput}
+                                    error={errors.fechainiciocontrato}
                                 />
                                 <FormControl 
                                     type={'date'}
@@ -105,6 +148,7 @@ const InquilinosRegister = () => {
                                     label={'Fecha de fin de contrato'}
                                     value={form.fechafincontrato || ''}
                                     onInput={handleInput}
+                                    error={errors.fechafincontrato}
                                 />
                             </section>
                             <section className="grid grid-cols-2 gap-4">
@@ -114,12 +158,22 @@ const InquilinosRegister = () => {
                                     label={'Monto de depósito'}
                                     value={form.montodeposito || ''}
                                     onInput={handleInput}
+                                    error={errors.montodeposito}
                                 />
+                                <FormControl 
+                                    type={'number'}
+                                    name={'montorentamensual'}
+                                    label={'Monto mensual de deposito'}
+                                    value={form.montorentamensual || ''}
+                                    onInput={handleInput}
+                                    error={errors.montorentamensual}
+                                />
+                            </section>
+                            <section>
                                 <SelectControl 
                                     name={'estadocontrato'}
                                     label={'Estado de contrato'}
-                                    value={form.estadocontrato || 'Activo'}
-                                    options={[{Activo: 'Activo'}, {Inactivo: 'Inactivo'}]}
+                                    value={'Activo'}
                                     disabled
                                 />
                             </section>
@@ -128,7 +182,10 @@ const InquilinosRegister = () => {
                 </div>
                 <div className="bg-white p-8 rounded flex-1 text-black flex flex-col">
                     <div className="flex h-96 flex-col w-full">
-                        <header className="text-xl font-semibold mb-10">Departamentos disponibles</header>
+                        <header className="text-xl font-semibold mb-10 flex items-center">
+                            Departamentos disponibles
+                            <p className="text-danger mx-auto text-sm">{errors.departamento}</p>
+                        </header>
                         <div className="flex flex-1 w-full overflow-auto gap-2">
                             <div className="w-full px-4 pb-2">
                                 <TableLayout
@@ -141,11 +198,11 @@ const InquilinosRegister = () => {
                                     ]}
                                 >
                                     {departamentos?.map(departamento => (
-                                        <tr key={departamento.id} className={`text-black text-center cursor-pointer transition-colors ${departamento.id === form.departamento_id ? 'bg-bodydark1' : 'hover:bg-whiten'}`} onClick={(e) => {handleInput(e, {name:'departamento_id', value: departamento.id})}}>
-                                            <td className="p-4">{departamento.nDepartamento}</td>
-                                            <td className="p-4">{departamento.nCuartos}</td>
-                                            <td className="p-4">{departamento.nBaños}</td>
-                                            <td className="p-4">{departamento.area}</td>
+                                        <tr key={departamento.ndepartamento} className={`text-black text-center cursor-pointer transition-colors ${departamento.ndepartamento === form?.departamento?.ndepartamento ? 'bg-bodydark1' : 'hover:bg-whiten'}`} onClick={(e) => {handleInput(e, {name:'departamento', value: {...departamento}})}}>
+                                            <td className="p-4">{departamento.ndepartamento}</td>
+                                            <td className="p-4">{departamento.nhabitaciones}</td>
+                                            <td className="p-4">{departamento.nbaños}</td>
+                                            <td className="p-4">{departamento.areatotal}</td>
                                             <td className="p-4">{departamento.precio}</td>
                                         </tr>
                                     ))}
@@ -154,7 +211,7 @@ const InquilinosRegister = () => {
                         </div>
                     </div>
                     <div className="flex gap-2 w-full py-20 items-end justify-end">
-                        <ButtonPrimary className="w-auto" onClick={registrarAgente}>
+                        <ButtonPrimary className="w-auto" onClick={registrarInquilino}>
                             Registrar inquilino
                         </ButtonPrimary>
                         <ButtonPrimary className="w-auto" onClick={() => navigate('..')}>

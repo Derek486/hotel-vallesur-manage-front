@@ -17,7 +17,7 @@ const useForm = (initialValues = {}) => {
         }
     })
 
-    return [form, handleInput]
+    return [form, handleInput, setForm]
 }
 
 export default useForm

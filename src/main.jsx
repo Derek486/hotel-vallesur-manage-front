@@ -6,9 +6,9 @@ import router from './routes/index'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <ToastProvider>
         <RouterProvider router={router} />
     </ToastProvider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { jwtDecode } from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
 import { EyeIcon, EyeSlashIcon } from '../../components/Icons'
 import FormControl from '../../components/FormControl'
@@ -15,26 +14,37 @@ const Login = () => {
     const [passwordHidden, setPasswordHidden] = useState(false)
     const [isSending, setIsSending] = useState(false)
     const [toast] = useToast()
-
+    const [errors, setErrors] = useState({})
+    
     const handleSubmit = (e) => {
-        e.preventDefault()
-
-        setIsSending(true)
+        e.preventDefault();
+        setIsSending(true);
         toast.promise(login(form), {
-            error: <p>No se pudo iniciar sesion</p>,
-            loading: <p>Logeando</p>,
-            success: <p>Inicio de sesion correcto</p>
+            error: <p>No se pudo iniciar sesión</p>,
+            loading: <p>Iniciando sesión</p>,
+            success: <p>Inicio de sesión correcto</p>
         }).then((res) => {
-            localStorage.setItem('token', res.data.token);
-            const decode = jwtDecode(res.data.token)
-            console.log(decode);
+            const { token, user } = res.data;
+            if (token && user && token.split('.').length === 3) {
+
+                window.localStorage.setItem('firstname', user.firstname)
+                window.localStorage.setItem('lastname', user.lastname)
+                window.localStorage.setItem('token', token);
+                
+                const userRole = user.role;
+                window.localStorage.setItem('rol', userRole);
+                if (userRole === 'ROLE_ADMIN') {
+                    navigate('/dashboard/gerente');
+                } else if (userRole === 'ROLE_MANAGER') {
+                    navigate('/dashboard/agente');
+                }
+            }
         }).catch((err) => {
-            console.log(err);
+            setErrors(prev => ({...prev, ...err?.response?.data?.data?.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{})}))
         }).finally(() => {
-            setIsSending(false)
-        })
-        
-    }
+            setIsSending(false);
+        });
+    };
 
     return (
         <>
@@ -73,6 +83,7 @@ const Login = () => {
                                         name={'email'}
                                         value={form.email || ''}
                                         onInput={handleInput}
+                                        error={errors.email}
                                     />
                                     <FormControl
                                         id={'contrasena'}
@@ -84,6 +95,7 @@ const Login = () => {
                                         onInput={handleInput}
                                         onInputIcon={() => setPasswordHidden(!passwordHidden)}
                                         icon={!passwordHidden ? <EyeIcon /> : <EyeSlashIcon />}
+                                        error={errors.password}
                                     />
                                     <ButtonPrimary type={'submit'} className='w-full mt-4'>
                                         {!isSending ? (

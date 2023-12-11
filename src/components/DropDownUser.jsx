@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 import { ProfileIcon, LogoutIcon } from './Icons';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate desde react-router-dom
 import useLogout from '../hooks/useLogout';
+import { jwtDecode } from 'jwt-decode';
 
-const DropdownUser = ({ role }) => {
+
+const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logout] = useLogout()
+  const navigate = useNavigate();
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
+
+  const userFirstname = localStorage.getItem('firstname');
+  const userLastname = localStorage.getItem('lastname');
+
+  const role = localStorage.getItem('rol')
 
   // close on click outside
   useEffect(() => {
@@ -36,21 +45,16 @@ const DropdownUser = ({ role }) => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-  useEffect(() => {
-    // getUser()
-    //   .then(({ data }) => {
-    //     setUsuario(data)
-    //   })
-  }, [])
-
   const handleLogout = () => {
-    // logout()
-    //   .then(res => {
-    //     if (res.status === 204) {
-    //       navigate('/auth/login')
-    //     } 
-    //   })
-  }
+    logout()
+      .then(() => {
+          navigate('/login');
+      })
+      .catch((error) => {
+          console.error(error);
+      });
+  };
+
 
   return (
     <div className="relative">
@@ -62,7 +66,7 @@ const DropdownUser = ({ role }) => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-lg font-medium text-black">
-            Juan Jose
+            {`${userFirstname} ${userLastname}`}
           </span>
         </span>
 
@@ -93,14 +97,14 @@ const DropdownUser = ({ role }) => {
         }`}
       >
         <Link
-            to={`/dashboard/${role}/perfil`}
+            to={`/dashboard/${role === 'ROLE_ADMIN' ? 'gerente' : 'agente'}/perfil`}
             className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
         >
             <ProfileIcon height={22} width={22} />
             Mi Perfil
         </Link>
         <button 
-          onClick={logout}        
+          onClick={handleLogout}        
           className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
           <LogoutIcon width={22} height={22} />
           Cerrar sesión

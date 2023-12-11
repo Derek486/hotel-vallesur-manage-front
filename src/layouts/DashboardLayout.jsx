@@ -4,10 +4,22 @@ import { LogoutIcon, ProfileIcon } from "../components/Icons"
 import vallesur from '../assets/vallesur.png'
 import useLogout from "../hooks/useLogout"
 import useHeader from "../hooks/useHeader"
+import { useNavigate } from "react-router-dom"
 
 const DashboardLayout = ({ role, sidebar, children }) => {
     const [logout] = useLogout()
     const [title] = useHeader()
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout()
+            .then(() => {
+                navigate('/login');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+      };
 
     return (
         <div className="h-screen bg-gradient-to-l bg-stroke text-white">
@@ -32,7 +44,7 @@ const DashboardLayout = ({ role, sidebar, children }) => {
                             <h2 className="text-lg font-semibold">Dashboard</h2>
                             <div className="mt-1 mb-3">
                                 {sidebar}
-                                <LinkDashboard text={"Cerrar sesion"} icon={<LogoutIcon />} onClick={logout} />
+                                <LinkDashboard text={"Cerrar sesion"} icon={<LogoutIcon />} onClick={handleLogout} />
                             </div>
                         </div>
                     </div>
@@ -40,7 +52,7 @@ const DashboardLayout = ({ role, sidebar, children }) => {
                 <div className="flex-1 flex flex-col">
                     <header className="sticky bg-white text-black h-20 flex justify-between items-center px-8 shadow-card-2">
                         <h1 className="text-xl font-semibold">{title}</h1>
-                        <DropdownUser role={role} />
+                        <DropdownUser />
                     </header>
                     <main className="p-10 flex-1 overflow-auto">
                         {children}

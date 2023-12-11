@@ -9,37 +9,71 @@ import useForm from "../../../../hooks/useForm"
 import useSearch from "../../../../hooks/useSearch"
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { borrarPagoAlquiler, crearPagoAlquiler, listarPagoAlquiler } from "../../../../services/pagoAlquiler"
+import useToast from "../../../../hooks/useToast"
+import { listarInquilinos } from "../../../../services/inquilinos"
 
 
 const Pagos = () => {
     const [pagos, setPagos] = useState([])
-    const [formPago, handleInputPago] = useForm({})
+    const [formPago, handleInputPago] = useForm({
+        metodopago: 'Efectivo'
+    })
     const [filteredData, handleSearch] = useSearch(pagos)
+    const [errors, setErrors] = useState({})
+    const [inquilinos, setInquilinos] = useState([])
     const tableRef = useRef(null)
-
-    const inquilinos = Array.from({length: 20}, (v, k) => (
-        {
-            id: k,
-            nombres: 'mario',
-            apellidos: 'castañeda',
-            departamento: 201
-         }
-    ))
+    const [toast] = useToast()
 
     useEffect(() => {
-        // Se listan los departamentos
-        setPagos(Array.from({length: 20}, (v, k) => (
-            {
-                id: k,
-                inquilino: 'Juanito perez',
-                fechaPago: '2023-12-05',
-                monto: '1200',
-             }
-        )))
+        // Se listan los inquilinos
+        toast.promise(listarInquilinos(), {
+            error: <p>Error al listar los inquilinos</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Inquilinos listados correctamente</p>
+        }).then((res) => {
+            setInquilinos(res.data.data);
+        }).catch((err) => {
+            console.log(err);
+        })
+        // Se listan los pagos
+        toast.promise(listarPagoAlquiler(), {
+            error: <p>Error al listar los pagos</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Pagos listados correctamente</p>
+        }).then((res) => {
+            setPagos(res.data.data);
+        }).catch((err) => {
+            console.log(err);
+        })
+        
     }, [])
 
     const generarPago = () => {
-        console.log(formPago);
+        setErrors({})
+        toast.promise(crearPagoAlquiler(formPago), {
+            error: <p>Error al crear el pagos</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Pago creado correctamente</p>
+        }).then((res) => {
+            setPagos([...pagos, res.data.data]);
+        }).catch((err) => {
+            console.log(err);
+            setErrors(prev => ({...prev, ...err.response.data.data.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{})}))
+        })
+        
+    }
+    
+    const eliminarPago = (id) => {
+        toast.promise(borrarPagoAlquiler(id), {
+            error: <p>Error al eliminar el pago</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Pago eliminado correctamente</p>
+        }).then((res) => {
+            setPagos(pagos.filter(p => p.id !== id));
+        }).catch((err) => {
+            console.log(err);
+        })
     }
 
     const generarReporte  = useCallback((id) => {
@@ -88,19 +122,19 @@ const Pagos = () => {
                         <div className="w-full px-4 pb-2">
                             {/* Tabla de departamentos */}
                             <TableLayout id="table" refTable={tableRef} header={[
-                                "Inquilino",
+                                "Contrato",
                                 "Fecha de pago",
                                 "Monto",
                                 "Acción"
                             ]}>
                                 {filteredData?.map(pago => (
                                     <tr key={pago.id} className="text-black text-center">
-                                        <td className="p-4">{pago.inquilino}</td>
-                                        <td className="p-4">{pago.fechaPago}</td>
-                                        <td className="p-4">{pago.monto}</td>
+                                        <td className="p-4">{pago?.contratoalquiler?.id}</td>
+                                        <td className="p-4">{new Date(pago.fechapago).toLocaleDateString()}</td>
+                                        <td className="p-4">{pago.montopago}</td>
                                         <td className="p-4 flex justify-center gap-2">
                                             <FileIcon onClick={() => generarReporte(pago.id)} className='cursor-pointer hover:fill-bodydark2 transition-colors' />
-                                            <TrashIcon className='cursor-pointer hover:fill-danger transition-colors' />
+                                            <TrashIcon onClick={() => eliminarPago(pago.id)} className='cursor-pointer hover:fill-danger transition-colors' />
                                         </td>
                                     </tr>
                                 ))}
@@ -119,6 +153,7 @@ const Pagos = () => {
                             label={'Monto de pago'}
                             value={formPago.montopago || ''}
                             onInput={handleInputPago}
+                            error={errors.montopago}
                         />
                         <SelectControl 
                             name={'metodopago'}
@@ -129,6 +164,7 @@ const Pagos = () => {
                                 {Tarjeta: 'Tarjeta'}
                             ]}
                             value={formPago.metodopago || ''}
+                            error={errors.metodopago}
                             onInput={handleInputPago}
                         />
 
@@ -137,15 +173,18 @@ const Pagos = () => {
                         Inquilino
                     </div>
                     <div className="flex flex-1 w-full flex-col px-8 overflow-auto gap-2">
-                        <p className="text-graydark py-2">Seleccione un inquilino</p>
+                        <div className="flex items-center">
+                            <p className="text-graydark py-2">Seleccione un inquilino</p>
+                            {errors.contratoalquiler && <p className="text-danger ms-auto">Seleccione un inquilino</p>}
+                        </div>
                         <div className="flex-1 overflow-auto">
                             <ul className=" max-h-full overflow-auto">
-                                {inquilinos.map(i => (
+                                {inquilinos?.map(i => (
                                     <li key={i.id}>
-                                        <button className={`flex w-full text-graydark justify-between transition-colors p-4 ${formPago.inquilino === i.id ? 'bg-bodydark1' : 'hover:bg-whiten'}`} onClick={(e) => {handleInputPago(e, {name: 'inquilino', value: i.id})}}>
-                                            <p>{i.nombres}</p> 
+                                        <button className={`flex w-full text-graydark justify-between transition-colors p-4 ${formPago?.contratoalquiler?.id === i?.contratoAlquiler?.id ? 'bg-bodydark1' : 'hover:bg-whiten'}`} onClick={(e) => {handleInputPago(e, {name: 'contratoalquiler', value: {id: i?.contratoAlquiler?.id}})}}>
+                                            <p>{i.nombre}</p> 
                                             <p>{i.apellidos}</p>
-                                            <p>Departamento: {i.departamento}</p>
+                                            <p>Departamento: {i.departamento.ndepartamento}</p>
                                         </button>
                                     </li> 
                                 ))}

@@ -2,11 +2,35 @@ import { useNavigate } from "react-router-dom"
 import ButtonPrimary from "../../../../components/ButtonPrimary"
 import FormControl from "../../../../components/FormControl"
 import useForm from "../../../../hooks/useForm"
+import { crearDepartamento } from "../../../../services/departamentos"
+import useToast from "../../../../hooks/useToast"
+import { useState } from "react"
 
 const DepartamentosRegister = () => {
-    const navigate = useNavigate()
-    const [form, handleInput] = useForm()
+    const navigate = useNavigate();
+    const [form, handleInput] = useForm({
+        estado: "Disponible",
+    });
+    const [errors, setErrors] = useState({})
+    const [toast] = useToast();
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        toast.promise(
+            crearDepartamento(form),
+            {
+                error: <p>No se pudo registrar el departamento</p>,
+                loading: <p>Cargando</p>,
+                success: <p>Se inició el departamento correctamente</p>
+            }
+        ).then((res) => {
+            navigate('..')
+        }).catch((err) => {
+            setErrors(err.response.data.data.reduce((acc, curr) => ({...acc,[curr.field]:curr.defaultMessage}),{}))
+        })
+    };
+    
+ 
     return (
         <>
             <div className="flex gap-4 h-full">
@@ -14,45 +38,50 @@ const DepartamentosRegister = () => {
                     <div className="flex flex-col w-full">
                         <header className="text-xl font-semibold mb-10">Datos de departamento</header>
                         <div className="flex flex-col gap-4">
-                            <section className="grid grid-cols-2 gap-4">
+                        <section className="grid grid-cols-2 gap-4">
                                 <FormControl 
-                                    name={'nombreONumero'}
+                                    name={'ndepartamento'}
                                     type={'text'}
-                                    label={'Nombre o número'}
-                                    value={form.nombreONumero || ''}
+                                    label={'Número de departamento'}
+                                    value={form.ndepartamento || ''}
                                     onInput={handleInput}
+                                    error={errors.ndepartamento}
                                 />
                                 <FormControl 
-                                    name={'nCuartos'}
+                                    name={'nhabitaciones'}
                                     type={'number'}
                                     label={'Nro de cuartos'}
-                                    value={form.nCuartos || ''}
+                                    value={form.nhabitaciones || ''}
                                     onInput={handleInput}
+                                    error={errors.nhabitaciones}
                                 />
                             </section>
                             <section className="grid grid-cols-2 gap-4">
                                 <FormControl 
-                                    name={'nBaños'}
+                                    name={'nbaños'}
                                     type={'number'}
-                                    label={'Nro de cuartos'}
-                                    value={form.nBaños || ''}
+                                    label={'Nro de baños'}
+                                    value={form.nbaños || ''}
                                     onInput={handleInput}
+                                    error={errors.nbaños}
                                 />
                                 <FormControl 
-                                    name={'areaTotal'}
+                                    name={'areatotal'}
                                     type={'number'}
                                     label={'Area total'}
-                                    value={form.areaTotal || ''}
+                                    value={form.areatotal || ''}
                                     onInput={handleInput}
+                                    error={errors.areatotal}
                                 />
                             </section>
                             <section className="grid grid-cols-2 gap-4">
                                 <FormControl 
-                                    name={'precioRenta'}
+                                    name={'precio'}
                                     type={'number'}
                                     label={'Precio de renta'}
-                                    value={form.precioRenta || ''}
+                                    value={form.precio || ''}
                                     onInput={handleInput}
+                                    error={errors.precio}
                                 />
                                 <FormControl 
                                     name={'estado'}
@@ -66,18 +95,12 @@ const DepartamentosRegister = () => {
                         </div>
                     </div>
                     <div className="flex gap-2 w-full flex-1 items-end justify-end">
-                        <ButtonPrimary className="w-auto">
+                        <ButtonPrimary className="w-auto" onClick={handleSubmit}>
                             Registrar departamento
                         </ButtonPrimary>
                         <ButtonPrimary className="w-auto" onClick={() => navigate('..')}>
                             Cancelar
                         </ButtonPrimary>
-                    </div>
-                </div>
-                <div className="bg-white p-8 rounded flex-1 text-black flex flex-col">
-                    <header className="text-xl font-semibold mb-10">Inquilino actual</header>
-                    <div className="flex-1 flex items-center justify-center">
-                        <p className="text-2xl">Sin inquilino</p>
                     </div>
                 </div>
             </div>

@@ -3,29 +3,27 @@ import { EditIcon, SearchIcon, TrashIcon } from "../../../../components/Icons"
 import TableLayout from "../../../../layouts/TableLayout"
 import { useEffect, useState } from "react"
 import FormControl from "../../../../components/FormControl"
-import ButtonPrimary from "../../../../components/ButtonPrimary"
 import useSearch from "../../../../hooks/useSearch"
+import { listarContratos } from "../../../../services/contratos"
+import useToast from "../../../../hooks/useToast"
 
 const Contratos = () => {
 
     const navigate = useNavigate()
     const [contratos, setContratos] = useState([])
     const [filteredData, handleSearch] = useSearch(contratos)
-
+    const [toast] = useToast()
 
     useEffect(() => {
-        // Se listan los agentes
-        setContratos(Array.from({length: 20}, (v, k) => (
-            {
-                id: k,
-                nombres: 'Mario',
-                apellidos: 'Ezcurra Zegarra',
-                email: 'admin@gmail.com',
-                username: 'mario123',
-                telefono: '967805223',
-                numeroIdentificacion: '612567146',
-             }
-        )))
+        toast.promise(listarContratos(),{
+            error: <p>Error al listar contratos</p>,
+            loading: <p>Cargando...</p>,
+            success: <p>Contratos listados correctamente</p> 
+        }).then((res) => {
+            setContratos(res.data.data)
+        }).catch((err) => {
+            console.error(err);
+        })
     }, [])
 
     return (
@@ -45,23 +43,23 @@ const Contratos = () => {
                 </div>
                 <div className="flex flex-1 w-full overflow-auto gap-2 ">
                     <div className="w-full px-4 pb-2">
-                        {/* Tabla de departamentos */}
+                        {/* Tabla de contratoalquiler */}
                         <TableLayout header={[
+                            "#",
                             "Fecha de inicio",
-                            "Duración",
+                            "Fecha de fin",
                             "Monto de deposito",
                             "Renta mensual",
                             "Estado",
-                            "Inquilino",
                         ]}>
-                            {filteredData?.map(agente => (
-                                <tr key={agente.id} className="text-black text-center">
-                                    <td className="p-4">{agente.nombres}</td>
-                                    <td className="p-4">{agente.apellidos}</td>
-                                    <td className="p-4">{agente.email}</td>
-                                    <td className="p-4">{agente.username}</td>
-                                    <td className="p-4">{agente.telefono}</td>
-                                    <td className="p-4">{agente.numeroIdentificacion}</td>
+                            {filteredData?.map(contratoalquiler => (
+                                <tr key={contratoalquiler.id} className="text-black text-center">
+                                    <td className="p-4">{contratoalquiler.id}</td>
+                                    <td className="p-4">{new Date(contratoalquiler.fechainiciocontrato).toLocaleDateString()}</td>
+                                    <td className="p-4">{new Date(contratoalquiler.fechafincontrato).toLocaleDateString()}</td>
+                                    <td className="p-4">{contratoalquiler.montodeposito}</td>
+                                    <td className="p-4">{contratoalquiler.montorentamensual}</td>
+                                    <td className="p-4">{contratoalquiler.estadocontrato}</td>
                                 </tr>
                             ))}
                         </TableLayout>
