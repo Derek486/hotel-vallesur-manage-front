@@ -12,7 +12,14 @@ import NotFound from "../pages/NotFound";
 const router = createBrowserRouter([
     {
         path: '',
-        loader: () => localStorage.getItem('token') ? redirect('/dashboard') : redirect('/login')
+        loader: () => {
+            let rol = window.localStorage.getItem('rol')
+            let decode = window.localStorage.getItem('token')
+            if(rol && decode)
+                return redirect('/dashboard');
+            else 
+                return redirect('/login')
+        }
     },
     {
         path: "/login",
