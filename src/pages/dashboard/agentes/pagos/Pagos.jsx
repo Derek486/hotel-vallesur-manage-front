@@ -80,8 +80,8 @@ const Pagos = () => {
         const doc = new jsPDF()
         autoTable(doc, {
             startY: 45,
-            head: [['ID', 'Inquilino', 'Fecha de pago', 'Monto']],
-            body: (id ? pagos.filter(p => p.id === id) : pagos).map(p => [p.id, p.inquilino, p.fechaPago, p.monto]),
+            head: [['ID', 'Nro Contrato', 'Fecha de pago', 'Monto']],
+            body: (id ? pagos.filter(p => p.id === id) : pagos).map(p => [p.id, p?.contratoalquiler?.id, new Date(p.fechapago).toLocaleDateString(), p.montopago]),
             headStyles: {
                 fillColor: '#313D4A'
             },
